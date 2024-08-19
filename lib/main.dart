@@ -1,13 +1,18 @@
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_widgets/Widgets/button.dart';
-import 'package:flutter_widgets/Widgets/container_sized.dart';
-import 'package:flutter_widgets/Widgets/list_grid.dart';
-import 'package:flutter_widgets/Widgets/rowcols.dart';
-import 'package:flutter_widgets/Widgets/snackbar.dart';
+import 'package:flutter_widgets/Screen/Authentication.dart';
+import 'package:flutter_widgets/Screen/crud_with_database.dart';
+import 'firebase_options.dart';
 
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
 
-void main() => runApp(MyApp());
-
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
+  runApp(const MyApp());
+}
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
@@ -17,11 +22,19 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
-        appBarTheme: AppBarTheme(color: Colors.deepPurple),
-        primaryColor: Colors.deepPurple
+          appBarTheme: const AppBarTheme(color: Colors.blue),
+          primaryColor: Colors.deepPurple),
+      //home:
+      home: StreamBuilder(
+        stream: FirebaseAuth.instance.authStateChanges(),
+        builder: (context, snapshot) {
+          if (snapshot.hasData) {
+            return const DatabaseCrud();
+          } else {
+            return const Authentication();
+          }
+        },
       ),
-
-      home: const SnackBarWidget(),
     );
   }
 }
